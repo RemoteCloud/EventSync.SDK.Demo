@@ -33,4 +33,4 @@ There are several SignalR methods:
 It is possible to post events from both Edge and Cloud instances and to receive from both Edge and Cloud instances.
 Source code of the demo app contains publishing event from Edge to Cloud.
 
-![signalreventsync-drawio](https://user-images.githubusercontent.com/85729931/174259014-2716ed78-07d5-465f-a7a7-b37031781f0f.png)
+![signalreventsync-drawio drawio](https://user-images.githubusercontent.com/85729931/174261838-f6a50321-d594-4ecf-a5f9-92e2992273fd.png)
