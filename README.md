@@ -1,16 +1,18 @@
 ﻿# EventSync.SDK.Demo
 This repository contains 2 console applications:
-- Publisher - publishes an event to the Edge instance;
-- Subscriber - subscribes to the Cloud instance to listen to new arrived events.
+- EdgeClient - publishes an event to the Cloud instance and is subscribed to receive events from Cloud;
+- CloudClient - publishes an event to the Edge instance and is subscribed to receive events from Edge.
 
 In order to have a working version, please update the configuration file with the required values:
 - AppStore Url;
 - Client ID;
 - Client Secret;
+- Destination Location Id for CloudClient;
 - EventSync Cloud/Edge base url.
 
 ### Publisher
-In order to publish a new event so it will be synced to the Cloud instance, you need to call HTTP POST REST API ```api/events```, in request body you will specify your event in ```application/json``` format. Response will contain id and status of the posted event.
+In order to start working with Event Sync, to send and listen events, you need to create subscription first, through SignalR protocol on ```/events``` hub url.
+Afterwards you can send a new event so it will be synced to the Cloud/Edge instance, using HTTP POST REST API ```api/events```, in request body you will specify your event in ```application/json``` format. Response will contain id and status of the posted event.
 In order to verify the status of the event, you can call HTTP GET REST API ```api/events/{id}```.
 
 **Possible statuses**:
@@ -22,12 +24,12 @@ In order to verify the status of the event, you can call HTTP GET REST API ```ap
 - Unknown - Unknown message id / no status information.
 
 ### Subscriber
-In order to receive new events, in this case from Edge to Cloud, you need to be subscribed through SignalR protocol on ```/events``` hub url.
 There are several SignalR methods:
-- **SubscribeToListenEvents** - initial method, which is invoked by client to subscribe to listen to new events;
-- **ReceiveSubscriptionResult** - this method contains result from *SubscribeToListenEvents* method. In response, it will contain all new unlistened events, client's application ID, subscriber name. If subscription was unsuccessful, it will contain error details;
-- **ConfirmEventDelivery** - invoked from client side to server. Client should pass event id in order to mark it as listened. Event sync engine won't retrieve this event to subscriber anymore. Client has responsibility to call this method for each delivered event.
+- **SubscribeToEvents** - initial method, which is invoked by client to create subscription, afterwards you can listen to new events and send new ones to destination;
 - **ReceiveEvent** - through this method subscriber will receive new events live.
+- **ReceiveSubscriptionResult** - this method contains result from *SubscribeToListenEvents* method. In response, it will contain client's application name and tenants.If subscription was unsuccessful, it will contain error details;
+- **ConfirmEventDelivery** - invoked from client side to server. Client should pass event id in order to mark it as listened. Event sync engine won't retrieve this event to subscriber anymore. Client has responsibility to call this method for each delivered event. Client should supply tenant name to confirm event.
+
 
 ### Event Sync diagram
 It is possible to post events from both Edge and Cloud instances and to receive from both Edge and Cloud instances.
