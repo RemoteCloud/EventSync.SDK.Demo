@@ -1,4 +1,4 @@
-﻿namespace PublisherClient.Models;
+﻿namespace CloudClient.Models;
 public class PostOutboxEventResponse
 {
     public string Status { get; set; }

@@ -1,36 +1,33 @@
-﻿using Maranics.AppStore.SDK;
+﻿using CloudClient;
+using CloudClient.Models;
+using Maranics.AppStore.SDK;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SubscriberClient;
 
 var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Development.json", false, true)
                 .Build();
-
-var apiConfig = new ApiConfiguration();
-configuration.Bind(apiConfig);
-
+var eConfig = new EventSyncConfiguration();
+configuration.Bind("EventSync", eConfig);
 using IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((_, services) =>
     {
-        services.AddSingleton(apiConfig);
-        services.AddScoped<ISubscriber, Subscriber>();
+        services.AddSingleton(eConfig);
+        services.AddHttpClient<IEdgeClient, Client>();
         services.ConfigureAppStore(configuration);
     })
     .ConfigureLogging((context, config)
         => config.AddConfiguration(configuration.GetSection("Logging")))
     .Build();
 
+await RunClient(host.Services);
 
-await RunPublisher(host.Services);
-await host.RunAsync();
-
-async Task RunPublisher(IServiceProvider services)
+async Task RunClient(IServiceProvider services)
 {
     using IServiceScope serviceScope = services.CreateScope();
-    ISubscriber publisher = serviceScope.ServiceProvider.GetRequiredService<ISubscriber>();
-    await publisher.ExecuteAsync();
+    IEdgeClient client = serviceScope.ServiceProvider.GetRequiredService<IEdgeClient>();
+    await client.SendAndListenEvents();
     Console.WriteLine();
 }
