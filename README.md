@@ -16,19 +16,20 @@ Afterwards you can send a new event so it will be synced to the Cloud/Edge insta
 In order to verify the status of the event, you can call HTTP GET REST API ```api/events/{id}```.
 
 **Possible statuses**:
-- Acknowledged - message received by sync engine.
-- In transit - message was sent to the destination but not yet delivered.
-- Delivered - destination accepted an event.
-- Finished - message delivery confirmed by the client. All related processes to the event are finished.
-- Subscriber is missing - message was delivered to the destination but no active subscription was present to process the event.
-- Unknown - Unknown message id / no status information.
+- `Acknowledged` - message received by sync engine.
+- `In transit` - message was sent to the destination but not yet delivered.
+- `Delivered` - destination accepted an event.
+- `Finished` - message delivery confirmed by the client. All related processes to the event are finished.
+- `Subscriber is missing` - message was delivered to the destination but no active subscription was present to process the event.
+- `Unknown` - Unknown message id / no status information.
 
 ### Subscriber
 There are several SignalR methods:
 - **SubscribeToEvents** - initial method, which is invoked by client to create subscription, afterwards you can listen to new events and send new ones to destination;
 - **ReceiveEvent** - through this method subscriber will receive new events live.
 - **ReceiveSubscriptionResult** - this method contains result from *SubscribeToListenEvents* method. In response, it will contain client's application name and tenants.If subscription was unsuccessful, it will contain error details;
-- **ConfirmEventDelivery** - invoked from client side to server. Client should pass event id in order to mark it as listened. Event sync engine won't retrieve this event to subscriber anymore. Client has responsibility to call this method for each delivered event. Client should supply tenant name to confirm event.
+- **ConfirmEventDelivery** - invoked from client side to server. Client should pass event id in order to mark it as listened. Event sync engine won't retrieve this event to subscriber anymore. Client has responsibility to call this method for each delivered event. Client should supply tenant name to confirm event;
+- **ReceiveEventStatus** - through this method client will receive information when event has either status `Finished` or `Subscriber is missing`.
 
 
 ### Event Sync diagram
